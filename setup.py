@@ -6,39 +6,32 @@ with open("README.md", "r") as readme:
     long_description = readme.read()
 
 setup(
-    name="{project_name}",
+    name="py_ankiconnect",
     version="0.0.1",
-    description="TODO_description",
+    description="Simple ankiconnect wrapper for CLI and python use",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="TODO_URL",
+    url="https://github.com/thiswillbeyourgithub/py_ankiconnect",
     packages=find_packages(),
 
-    # TODO_check_values
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ],
     license="GPLv3",
-    keywords=["TODO_keywords"],
-    python_requires=">=3.11",
+    keywords=["anki", "flashcards", "ankiconnect", "learning", "cli", "tool", "spaced", "repetition", "ebbinghaus", "addon"],
+    python_requires=">=3.9",
 
     entry_points={
         'console_scripts': [
-            '{project_name}={project_name}.__init__:cli_launcher',
+            'py_ankiconnect=py_ankiconnect.__init__:cli_launcher',
         ],
     },
 
     install_requires=[
         "fire >= 0.6.0",
         "beartype >= 0.18.5",
-        # TODO_req
     ],
-    extra_require={
-    'optionnal_feature': [
-        # TODO_req
-        ]
-    },
 
 )
