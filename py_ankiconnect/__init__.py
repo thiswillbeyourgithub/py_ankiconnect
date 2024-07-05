@@ -25,7 +25,10 @@ def cli_launcher() -> None:
             # open the pager
             fire.Fire(PyAnkiconnect)
     else:
-        fire.Fire(PyAnkiconnect().call)
+        akc = PyAnkiconnect(called_from_cli=True)
+        out = akc(*args, **kwargs)
+        print(out)
+        return
 
 if __name__ == "__main__":
     cli_launcher()

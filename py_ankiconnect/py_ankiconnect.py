@@ -10,7 +10,7 @@ class PyAnkiconnect:
         self,
         default_host: str = "http://localhost",
         default_port: int = 8765,
-        output_json: bool = True,
+        called_from_cli: bool = False,
         ) -> None:
         """
         Params:
@@ -20,9 +20,9 @@ class PyAnkiconnect:
         """
         self.host: str = default_host
         self.port: int = default_port
-        self.output_json: bool = output_json
+        self.called_from_cli = called_from_cli
 
-    def call(
+    def __call__(
         self,
         action: str,
         **params,
@@ -32,19 +32,34 @@ class PyAnkiconnect:
         -------
         - action: str, for example 'sync'
         - params: dict, any parameters supported by the action.
-            * With addition of "port", "host" and "output_json" which,
+            * With addition of "port", "host" and "called_from_cli" which,
               if specified will overide (for this call only) the value
               given at instanciation time.
 
 
-        Example:
-        --------
-        instance = PyAnkiconnect(
-            host="http://localhost",
-            port=8765,
-            output_json=True
-        )
-        instance.call(
+        # How To
+        ## Using the command line
+        * You can either call it using `py_ankiconnect` or `python -m py_ankiconnect`.
+        * To see the help: `py_ankiconnect --help` (this will either print it using `rich` if installed or using the pager.)
+        * Examples:
+            * Get the list of tags: `py_ankiconnect getTags | jq`
+            * Get info about [Clozolkor](https://github.com/thiswillbeyourgithub/Clozolkor): `py_ankiconnect findModelsByName --modelNames ["Clozolkor"] | jq`
+
+        ## Using python
+        ``` python
+        from py_ankiconnect import PyAnkiconnect
+        akc = PyAnkiconnect()
+        # ^ You can set a different port or host there directly:
+        # akc = PyAnkiconnect(port=your_port)
+
+        # trigger a sync:
+        result = akc("sync")
+
+        # Get the list of all tags:
+        result = akc("getTags")
+
+        # Do some more advanced stuff:
+        akc(
             action="changeDeck",
             params={
                 "cards": [
@@ -54,8 +69,8 @@ class PyAnkiconnect:
                     ],
                 "deck": "Japanese::JLPT N3"
                 },
-                output_json=False,  # <- changed only for this call!
         )
+        ```
         """
 
         if "host" in params:
@@ -107,7 +122,7 @@ class PyAnkiconnect:
         if response['error'] is not None:
             raise Exception(f"Received error: '{response['error']}'")
 
-        if self.output_json:
+        if self.called_from_cli:
             return json.dumps(response['result'])
         else:
             return response['result']
@@ -115,7 +130,7 @@ class PyAnkiconnect:
 
 # set the docstring
 docstring = """
-# This docstring is simply a copy from the AnkiConnect readme from jully 2024. It is put as docstring for convenience but do checkout [the official AnkiConnect documentation](https://git.foosoft.net/alex/anki-connect).
+# This docstring below is simply the AnkiConnect README.md from jully 2024. It's here for convenience but do checkout [the official AnkiConnect documentation](https://git.foosoft.net/alex/anki-connect).
 
 ## Supported Actions
 
@@ -4432,5 +4447,8 @@ Search parameters are passed to Anki, check the docs for more information: https
     ```
     </details>
 
+---
+
+# This docstring above is simply the AnkiConnect README.md from jully 2024. It's here for convenience but do checkout [the official AnkiConnect documentation](https://git.foosoft.net/alex/anki-connect).
 """
 PyAnkiconnect.__doc__ = docstring
