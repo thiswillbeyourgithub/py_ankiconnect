@@ -12,7 +12,18 @@ def cli_launcher() -> None:
         lambda *args, **kwargs: [args, kwargs]
     )
     if "help" in args or ("help" in kwargs and kwargs["help"]):
-        fire.Fire(PyAnkiconnect)
+        try:
+            # if possible use rich because it's in markdown
+            from rich.console import Console
+            from rich.markdown import Markdown
+            console = Console()
+            md = Markdown(PyAnkiconnect.__doc__)
+            console.print(md)
+        except Exception:
+            # print it
+            print(PyAnkiconnect.__doc__)
+            # open the pager
+            fire.Fire(PyAnkiconnect)
     else:
         fire.Fire(PyAnkiconnect().call)
 
