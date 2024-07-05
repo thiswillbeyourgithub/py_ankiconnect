@@ -6,9 +6,9 @@ with open("README.md", "r") as readme:
     long_description = readme.read()
 
 setup(
-    name="py_ankiconnect",
+    name="py-ankiconnect",
     version="0.0.1",
-    description="Minimal wrapper to simplify the usage of the **awesome** [ankiconnect](https://git.foosoft.net/alex/anki-connect) anki addon.",
+    description="Minimal wrapper to simplify the usage of the awesome ankiconnect anki addon.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/thiswillbeyourgithub/py_ankiconnect",
