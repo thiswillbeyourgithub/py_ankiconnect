@@ -5,22 +5,39 @@ from  urllib.error import URLError
 
 class PyAnkiconnect:
     VERSION: str = "0.0.1"
+    called_from_cli: bool = False
 
     def __init__(
         self,
         default_host: str = "http://localhost",
         default_port: int = 8765,
-        called_from_cli: bool = False,
         ) -> None:
         """
-        Params:
-        -------
-        TODO
+        Initialize a PyAnkiconnect instance.
 
+        Parameters:
+        -----------
+        default_host : str, optional
+            The host address for AnkiConnect. Defaults to "http://localhost".
+        default_port : int, optional
+            The port number for AnkiConnect. Defaults to 8765.
+
+        Attributes:
+        -----------
+        host : str
+            The default host address for AnkiConnect.
+        port : int
+            The default port number for AnkiConnect.
+        called_from_cli : bool
+            Flag indicating if the instance is being created from a CLI. Defaults to False.
+            You should never have to modify it manually.
+
+        Returns:
+        --------
+        None
         """
         self.host: str = default_host
         self.port: int = default_port
-        self.called_from_cli = called_from_cli
 
     def __call__(
         self,
@@ -28,6 +45,9 @@ class PyAnkiconnect:
         **params,
         ) -> Union[List, str]:
         """
+        Ask something from a running anki instance.
+        **To see all the supported actions, see this class's docstring instead.**
+
         Params:
         -------
         - action: str, for example 'sync'
@@ -71,6 +91,8 @@ class PyAnkiconnect:
                 },
         )
         ```
+
+        **To see all the supported actions, see this class's docstring instead.**
         """
 
         if "host" in params:
