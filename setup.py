@@ -33,4 +33,7 @@ setup(
         "fire >= 0.6.0",
     ],
 
+    extras_require={
+        'rich': ['rich'],
+    },
 )
