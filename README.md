@@ -1,6 +1,7 @@
 
 # py_ankiconnect
-Just a simple wrapper to make it simple to use ankiconnect from python or from the commandline. I made this in about an hour to make it easy to interact with anki from my many python projects, as well as from the command line.
+Minimal wrapper to simplify the usage of the **awesome** [ankiconnect](https://git.foosoft.net/alex/anki-connect) anki addon.
+I made this in about an hour to make it easy to interact with [anki](https://ankitects.github.io/) from my many python projects (see my other repos), as well as from the command line.
 
 # Installation
 * `python -m pip install pyankiconnect` or git clone followed by `python -m pip install -e .`
