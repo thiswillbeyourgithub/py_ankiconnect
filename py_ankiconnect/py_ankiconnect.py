@@ -9,7 +9,7 @@ class PyAnkiconnect:
 
     def __init__(
         self,
-        default_host: str = "http://localhost",
+        default_host: str = "http://127.0.0.1",
         default_port: int = 8765,
         ) -> None:
         """
@@ -18,7 +18,7 @@ class PyAnkiconnect:
         Parameters:
         -----------
         default_host : str, optional
-            The host address for AnkiConnect. Defaults to "http://localhost".
+            The host address for AnkiConnect. Defaults to "http://127.0.0.1".
         default_port : int, optional
             The port number for AnkiConnect. Defaults to 8765.
 
