@@ -4,7 +4,7 @@ import urllib.request
 from  urllib.error import URLError
 
 class PyAnkiconnect:
-    VERSION: str = "0.1.0"
+    VERSION: str = "0.1.1"
     called_from_cli: bool = False
 
     def __init__(
