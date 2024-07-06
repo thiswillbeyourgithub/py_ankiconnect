@@ -12,6 +12,7 @@ class PyAnkiconnect:
         self,
         default_host: str = "http://127.0.0.1",
         default_port: int = 8765,
+        async_mode: bool = False,
         ) -> None:
         """
         Initialize a PyAnkiconnect instance.
@@ -22,6 +23,8 @@ class PyAnkiconnect:
             The host address for AnkiConnect. Defaults to "http://127.0.0.1".
         default_port : int, optional
             The port number for AnkiConnect. Defaults to 8765.
+        async_mode : bool, optional
+            Flag to enable asynchronous mode. Defaults to False.
 
         Attributes:
         -----------
@@ -29,6 +32,8 @@ class PyAnkiconnect:
             The default host address for AnkiConnect.
         port : int
             The default port number for AnkiConnect.
+        async_mode : bool
+            Flag indicating if the instance should operate in asynchronous mode.
         called_from_cli : bool
             Flag indicating if the instance is being created from a CLI. Defaults to False.
             You should never have to modify it manually.
@@ -39,6 +44,7 @@ class PyAnkiconnect:
         """
         self.host: str = default_host
         self.port: int = default_port
+        self.async_mode: bool = async_mode
 
     def __call__(
         self,
