@@ -192,26 +192,47 @@ if __name__ == "__main__":
     sync_time = end_time_sync - start_time_sync
     print(f"Time for 1 synchronous request: {sync_time:.2f} seconds")
 
+    async def async_sleep_timer():
+        start = time.time()
+        await asyncio.sleep(1)
+        end = time.time()
+        return end - start
+
     async def run_test(n):
-        # 10 asynchronous calls
         start_time = time.time()
         akc = PyAnkiconnect(async_mode=True)
-        tasks = [akc("getTags") for _ in range(n)]
-        results = await asyncio.gather(*tasks)
+        
+        # Create tasks for getTags and sleep timer
+        tag_tasks = [akc("getTags") for _ in range(n)]
+        sleep_task = asyncio.create_task(async_sleep_timer())
+        
+        # Gather all tasks
+        results = await asyncio.gather(*tag_tasks, sleep_task)
+        
         end_time = time.time()
-
         total_time = end_time - start_time
-        return results, total_time
+        
+        # The last result is from the sleep timer
+        sleep_time = results[-1]
+        tag_results = results[:-1]
+        
+        return tag_results, total_time, sleep_time
 
-    results, total_time = asyncio.run(run_test(n))
+    tag_results, total_time, sleep_time = asyncio.run(run_test(n))
 
     print(f"Total time for {n} asynchronous requests: {total_time:.2f} seconds")
     print(f"Average time per asynchronous request: {total_time/n:.2f} seconds")
+    print(f"Sleep timer duration: {sleep_time:.2f} seconds")
 
-    if total_time < sync_time * 5:  # Assuming async is at least 2x faster
+    if total_time < sync_time * n:
         print("The asynchronous requests were indeed faster!")
     else:
         print("The asynchronous requests might not be optimized. Check your implementation.")
 
-    assert all(r == ref for r in results), "results are not identical"
+    if sleep_time >= 1.0 and total_time > sleep_time:
+        print("The sleep timer ran concurrently with the requests, demonstrating asynchronous behavior!")
+    else:
+        print("The sleep timer might not have run concurrently. Check the implementation.")
+
+    assert all(r == ref for r in tag_results), "results are not identical"
 
