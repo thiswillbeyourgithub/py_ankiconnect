@@ -112,6 +112,11 @@ class PyAnkiconnect:
             del params["port"]
         else:
             port = self.port
+        if "async_mode" in params:
+            async_mode = params["async_mode"]
+            del params["async_mode"]
+        else:
+            async_mode = self.async_mode
         address: str = f"{host}:{port}"
 
         requestJson: bytes = json.dumps(
