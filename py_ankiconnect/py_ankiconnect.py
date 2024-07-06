@@ -173,7 +173,14 @@ class PyAnkiconnect:
     async def _async_request(self, address: str, requestJson: bytes) -> Dict:
         async with aiohttp.ClientSession() as session:
             async with session.post(address, data=requestJson) as response:
-                return await response.json()
+                assert response.ok, f"Status of response is not True but {response.ok}"
+                assert response.status == 200, f"Status code of response is not 200 but {response.ok}"
+                text = await response.text()
+        try:
+            data = json.loads(text)
+        except Exception as err:
+            raise Exception(f"Failed to decode json output of response: '{err}'")
+        return data
 
 
 # make sure both calls have the same info
