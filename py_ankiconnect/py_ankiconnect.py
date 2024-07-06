@@ -182,29 +182,36 @@ if __name__ == "__main__":
     import time
     import asyncio
 
-    async def run_test():
-        # Single synchronous call
-        akc_sync = PyAnkiconnect(async_mode=False)
-        start_time_sync = time.time()
-        akc_sync("getTags")
-        end_time_sync = time.time()
-        sync_time = end_time_sync - start_time_sync
-        print(f"Time for 1 synchronous request: {sync_time:.2f} seconds")
+    n = 10
 
+    # Single synchronous call
+    akc_sync = PyAnkiconnect(async_mode=False)
+    start_time_sync = time.time()
+    ref = akc_sync("getTags")
+    end_time_sync = time.time()
+    sync_time = end_time_sync - start_time_sync
+    print(f"Time for 1 synchronous request: {sync_time:.2f} seconds")
+
+    async def run_test(n):
         # 10 asynchronous calls
         start_time = time.time()
         akc = PyAnkiconnect(async_mode=True)
-        tasks = [akc("getTags") for _ in range(10)]
+        tasks = [akc("getTags") for _ in range(n)]
         results = await asyncio.gather(*tasks)
         end_time = time.time()
 
         total_time = end_time - start_time
-        print(f"Total time for 10 asynchronous requests: {total_time:.2f} seconds")
-        print(f"Average time per asynchronous request: {total_time/10:.2f} seconds")
+        return results, total_time
 
-        if total_time < sync_time * 5:  # Assuming async is at least 2x faster
-            print("The asynchronous requests were indeed faster!")
-        else:
-            print("The asynchronous requests might not be optimized. Check your implementation.")
+    results, total_time = asyncio.run(run_test(n))
 
-    asyncio.run(run_test())
+    print(f"Total time for {n} asynchronous requests: {total_time:.2f} seconds")
+    print(f"Average time per asynchronous request: {total_time/n:.2f} seconds")
+
+    if total_time < sync_time * 5:  # Assuming async is at least 2x faster
+        print("The asynchronous requests were indeed faster!")
+    else:
+        print("The asynchronous requests might not be optimized. Check your implementation.")
+
+    assert all(r == ref for r in results), "results are not identical"
+
