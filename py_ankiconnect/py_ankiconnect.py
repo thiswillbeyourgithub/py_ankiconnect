@@ -89,13 +89,13 @@ class PyAnkiconnect:
         # akc = PyAnkiconnect(port=your_port)
 
         # trigger a sync:
-        result = await akc("sync")
+        result = akc("sync")
 
         # Get the list of all tags:
-        result = await akc("getTags")
+        result = akc("getTags")
 
         # Do some more advanced stuff:
-        result = await akc(
+        result = akc(
             action="changeDeck",
             params={
                 "cards": [
