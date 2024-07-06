@@ -1,5 +1,4 @@
 import fire
-import asyncio
 
 from .py_ankiconnect import PyAnkiconnect
 
@@ -8,7 +7,7 @@ __all__ = ["PyAnkiconnect"]
 
 __VERSION__ = PyAnkiconnect.VERSION
 
-async def async_cli_launcher() -> None:
+def cli_launcher() -> None:
     args, kwargs = fire.Fire(
         lambda *args, **kwargs: [args, kwargs]
     )
@@ -26,14 +25,11 @@ async def async_cli_launcher() -> None:
             # open the pager
             fire.Fire(PyAnkiconnect)
     else:
-        akc = PyAnkiconnect(async_mode=True)
+        akc = PyAnkiconnect(async_mode=False)
         akc.called_from_cli = True
-        out = await akc(*args, **kwargs)
+        out = akc(*args, **kwargs)
         print(out)
         return
-
-def cli_launcher() -> None:
-    asyncio.run(async_cli_launcher())
 
 if __name__ == "__main__":
     cli_launcher()

@@ -1,10 +1,11 @@
 from pathlib import Path
 from typing import Union, List, Dict
 import json
-import urllib.request
 from urllib.error import URLError
 import asyncio
 import aiohttp
+from functools import wraps
+
 
 class PyAnkiconnect:
     VERSION: str = "0.1.2"
@@ -46,9 +47,16 @@ class PyAnkiconnect:
         """
         self.host: str = default_host
         self.port: int = default_port
-        self.async_mode: bool = async_mode
+        if async_mode:
+            self.__class__.__call__ = self.__class__.__async_call__
+        else:
+            self.__class__.__call__ = self.__class__.__sync_call__
+        self.async_mode = async_mode
 
-    async def __call__(
+    def __sync_call__(self, *args, **kwargs) -> Union[List, str]:
+        return asyncio.run(self.__async_call__(*args, **kwargs))
+
+    async def __async_call__(
         self,
         action: str,
         **params,
@@ -62,8 +70,8 @@ class PyAnkiconnect:
         - action: str, for example 'sync'
         - params: dict, any parameters supported by the action.
             * With addition of "port", "host" and "called_from_cli" which,
-              if specified will overide (for this call only) the value
-              given at instanciation time.
+                if specified will overide (for this call only) the value
+                given at instanciation time.
 
         # How To
         ## Using the command line
@@ -76,33 +84,28 @@ class PyAnkiconnect:
         ## Using python
         ``` python
         from py_ankiconnect import PyAnkiconnect
-        import asyncio
+        akc = PyAnkiconnect()
+        # ^ You can set a different port or host there directly:
+        # akc = PyAnkiconnect(port=your_port)
 
-        async def main():
-            akc = PyAnkiconnect()
-            # ^ You can set a different port or host there directly:
-            # akc = PyAnkiconnect(port=your_port)
+        # trigger a sync:
+        result = await akc("sync")
 
-            # trigger a sync:
-            result = await akc("sync")
+        # Get the list of all tags:
+        result = await akc("getTags")
 
-            # Get the list of all tags:
-            result = await akc("getTags")
-
-            # Do some more advanced stuff:
-            result = await akc(
-                action="changeDeck",
-                params={
-                    "cards": [
-                        1502098034045,
-                        1502098034048,
-                        1502298033753
-                    ],
-                    "deck": "Japanese::JLPT N3"
-                },
-            )
-
-        asyncio.run(main())
+        # Do some more advanced stuff:
+        result = await akc(
+            action="changeDeck",
+            params={
+                "cards": [
+                    1502098034045,
+                    1502098034048,
+                    1502298033753
+                ],
+                "deck": "Japanese::JLPT N3"
+            },
+        )
         ```
 
         **To see all the supported actions, see this class's docstring instead.**
@@ -119,10 +122,10 @@ class PyAnkiconnect:
         else:
             port = self.port
         if "async_mode" in params:
-            async_mode = params["async_mode"]
-            del params["async_mode"]
-        else:
-            async_mode = self.async_mode
+            raise Exception(
+                "async_mode can only be used when instantiating the class, "
+                "not when calling with it."
+            )
         address: str = f"{host}:{port}"
 
         requestJson: bytes = json.dumps(
@@ -134,10 +137,7 @@ class PyAnkiconnect:
         ).encode('utf-8')
 
         try:
-            if async_mode:
-                response: Dict = await self._async_request(address, requestJson)
-            else:
-                response: Dict = self._sync_request(address, requestJson)
+            response: Dict = await self._async_request(address, requestJson)
         except (ConnectionRefusedError, URLError, aiohttp.ClientError) as e:
             raise Exception(
                 f"Error: '{str(e)}': is Anki open? is ankiconnect enabled? "
@@ -169,15 +169,9 @@ class PyAnkiconnect:
             async with session.post(address, data=requestJson) as response:
                 return await response.json()
 
-    def _sync_request(self, address: str, requestJson: bytes) -> Dict:
-        return json.load(
-            urllib.request.urlopen(
-                urllib.request.Request(
-                    address,
-                    requestJson
-                )
-            )
-        )
+
+# make sure both calls have the same info
+PyAnkiconnect.__sync_call__ = wraps(PyAnkiconnect.__async_call__)(PyAnkiconnect.__sync_call__)
 
 # set the docstring
 docstring_file = Path(__file__).parent / "help.md"
