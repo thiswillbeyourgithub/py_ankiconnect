@@ -164,11 +164,6 @@ class PyAnkiconnect:
             return response['result']
 
 
-# set the docstring
-docstring_file = Path(__file__).parent / "help.md"
-docstring = docstring_file.read_text()
-PyAnkiconnect.__doc__ = docstring
-
 async def _async_request(self, address: str, requestJson: bytes) -> Dict:
     async with aiohttp.ClientSession() as session:
         async with session.post(address, data=requestJson) as response:
@@ -183,3 +178,8 @@ def _sync_request(self, address: str, requestJson: bytes) -> Dict:
             )
         )
     )
+
+# set the docstring
+docstring_file = Path(__file__).parent / "help.md"
+docstring = docstring_file.read_text()
+PyAnkiconnect.__doc__ = docstring
