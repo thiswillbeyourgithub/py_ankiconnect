@@ -8,7 +8,7 @@ from functools import wraps
 
 
 class PyAnkiconnect:
-    VERSION: str = "0.2.0"
+    VERSION: str = "0.2.1"
     called_from_cli: bool = False
 
     def __init__(
