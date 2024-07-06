@@ -2,7 +2,9 @@ from pathlib import Path
 from typing import Union, List, Dict
 import json
 import urllib.request
-from  urllib.error import URLError
+from urllib.error import URLError
+import asyncio
+import aiohttp
 
 class PyAnkiconnect:
     VERSION: str = "0.1.2"
@@ -46,11 +48,11 @@ class PyAnkiconnect:
         self.port: int = default_port
         self.async_mode: bool = async_mode
 
-    def __call__(
+    async def __call__(
         self,
         action: str,
         **params,
-        ) -> Union[List, str]:
+    ) -> Union[List, str]:
         """
         Ask something from a running anki instance.
         **To see all the supported actions, see this class's docstring instead.**
@@ -63,7 +65,6 @@ class PyAnkiconnect:
               if specified will overide (for this call only) the value
               given at instanciation time.
 
-
         # How To
         ## Using the command line
         * You can either call it using `py_ankiconnect` or `python -m py_ankiconnect`.
@@ -75,28 +76,33 @@ class PyAnkiconnect:
         ## Using python
         ``` python
         from py_ankiconnect import PyAnkiconnect
-        akc = PyAnkiconnect()
-        # ^ You can set a different port or host there directly:
-        # akc = PyAnkiconnect(port=your_port)
+        import asyncio
 
-        # trigger a sync:
-        result = akc("sync")
+        async def main():
+            akc = PyAnkiconnect()
+            # ^ You can set a different port or host there directly:
+            # akc = PyAnkiconnect(port=your_port)
 
-        # Get the list of all tags:
-        result = akc("getTags")
+            # trigger a sync:
+            result = await akc("sync")
 
-        # Do some more advanced stuff:
-        akc(
-            action="changeDeck",
-            params={
-                "cards": [
-                    1502098034045,
-                    1502098034048,
-                    1502298033753
+            # Get the list of all tags:
+            result = await akc("getTags")
+
+            # Do some more advanced stuff:
+            result = await akc(
+                action="changeDeck",
+                params={
+                    "cards": [
+                        1502098034045,
+                        1502098034048,
+                        1502298033753
                     ],
-                "deck": "Japanese::JLPT N3"
+                    "deck": "Japanese::JLPT N3"
                 },
-        )
+            )
+
+        asyncio.run(main())
         ```
 
         **To see all the supported actions, see this class's docstring instead.**
@@ -128,18 +134,14 @@ class PyAnkiconnect:
         ).encode('utf-8')
 
         try:
-            response: Dict = json.load(
-                urllib.request.urlopen(
-                    urllib.request.Request(
-                        address,
-                        requestJson
-                    )
-                )
-            )
-        except (ConnectionRefusedError, URLError) as e:
+            if async_mode:
+                response: Dict = await self._async_request(address, requestJson)
+            else:
+                response: Dict = self._sync_request(address, requestJson)
+        except (ConnectionRefusedError, URLError, aiohttp.ClientError) as e:
             raise Exception(
                 f"Error: '{str(e)}': is Anki open? is ankiconnect enabled? "
-                f"is your firewall configured? Adress is '{address}'"
+                f"is your firewall configured? Address is '{address}'"
             )
 
         if len(response) != 2:
@@ -166,3 +168,17 @@ class PyAnkiconnect:
 docstring_file = Path(__file__).parent / "help.md"
 docstring = docstring_file.read_text()
 PyAnkiconnect.__doc__ = docstring
+    async def _async_request(self, address: str, requestJson: bytes) -> Dict:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(address, data=requestJson) as response:
+                return await response.json()
+
+    def _sync_request(self, address: str, requestJson: bytes) -> Dict:
+        return json.load(
+            urllib.request.urlopen(
+                urllib.request.Request(
+                    address,
+                    requestJson
+                )
+            )
+        )
