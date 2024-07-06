@@ -188,11 +188,11 @@ if __name__ == "__main__":
         tasks = [akc("getTags") for _ in range(10)]
         results = await asyncio.gather(*tasks)
         end_time = time.time()
-        
+
         total_time = end_time - start_time
         print(f"Total time for 10 requests: {total_time:.2f} seconds")
         print(f"Average time per request: {total_time/10:.2f} seconds")
-        
+
         if total_time < 2:  # Assuming each request would take at least 0.2 seconds if done synchronously
             print("The requests were indeed asynchronous!")
         else:
