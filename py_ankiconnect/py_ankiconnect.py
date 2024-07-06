@@ -177,3 +177,25 @@ PyAnkiconnect.__sync_call__ = wraps(PyAnkiconnect.__async_call__)(PyAnkiconnect.
 docstring_file = Path(__file__).parent / "help.md"
 docstring = docstring_file.read_text()
 PyAnkiconnect.__doc__ = docstring
+
+if __name__ == "__main__":
+    import time
+    import asyncio
+
+    async def run_test():
+        start_time = time.time()
+        akc = PyAnkiconnect(async_mode=True)
+        tasks = [akc("getTags") for _ in range(10)]
+        results = await asyncio.gather(*tasks)
+        end_time = time.time()
+        
+        total_time = end_time - start_time
+        print(f"Total time for 10 requests: {total_time:.2f} seconds")
+        print(f"Average time per request: {total_time/10:.2f} seconds")
+        
+        if total_time < 2:  # Assuming each request would take at least 0.2 seconds if done synchronously
+            print("The requests were indeed asynchronous!")
+        else:
+            print("The requests might not have been asynchronous. Check your implementation.")
+
+    asyncio.run(run_test())
