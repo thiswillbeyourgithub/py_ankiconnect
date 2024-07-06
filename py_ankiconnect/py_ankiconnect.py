@@ -183,6 +183,15 @@ if __name__ == "__main__":
     import asyncio
 
     async def run_test():
+        # Single synchronous call
+        akc_sync = PyAnkiconnect(async_mode=False)
+        start_time_sync = time.time()
+        akc_sync("getTags")
+        end_time_sync = time.time()
+        sync_time = end_time_sync - start_time_sync
+        print(f"Time for 1 synchronous request: {sync_time:.2f} seconds")
+
+        # 10 asynchronous calls
         start_time = time.time()
         akc = PyAnkiconnect(async_mode=True)
         tasks = [akc("getTags") for _ in range(10)]
@@ -190,12 +199,12 @@ if __name__ == "__main__":
         end_time = time.time()
 
         total_time = end_time - start_time
-        print(f"Total time for 10 requests: {total_time:.2f} seconds")
-        print(f"Average time per request: {total_time/10:.2f} seconds")
+        print(f"Total time for 10 asynchronous requests: {total_time:.2f} seconds")
+        print(f"Average time per asynchronous request: {total_time/10:.2f} seconds")
 
-        if total_time < 2:  # Assuming each request would take at least 0.2 seconds if done synchronously
-            print("The requests were indeed asynchronous!")
+        if total_time < sync_time * 5:  # Assuming async is at least 2x faster
+            print("The asynchronous requests were indeed faster!")
         else:
-            print("The requests might not have been asynchronous. Check your implementation.")
+            print("The asynchronous requests might not be optimized. Check your implementation.")
 
     asyncio.run(run_test())
