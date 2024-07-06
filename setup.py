@@ -14,6 +14,7 @@ setup(
     url="https://github.com/thiswillbeyourgithub/py_ankiconnect",
     packages=find_packages(),
     include_package_data=True,
+    package_data={"py-ankiconnect": ["./py_ankiconnect/help.md"]}
 
     classifiers=[
         "Programming Language :: Python :: 3",
