@@ -164,20 +164,20 @@ class PyAnkiconnect:
             return response['result']
 
 
-async def _async_request(self, address: str, requestJson: bytes) -> Dict:
-    async with aiohttp.ClientSession() as session:
-        async with session.post(address, data=requestJson) as response:
-            return await response.json()
+    async def _async_request(self, address: str, requestJson: bytes) -> Dict:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(address, data=requestJson) as response:
+                return await response.json()
 
-def _sync_request(self, address: str, requestJson: bytes) -> Dict:
-    return json.load(
-        urllib.request.urlopen(
-            urllib.request.Request(
-                address,
-                requestJson
+    def _sync_request(self, address: str, requestJson: bytes) -> Dict:
+        return json.load(
+            urllib.request.urlopen(
+                urllib.request.Request(
+                    address,
+                    requestJson
+                )
             )
         )
-    )
 
 # set the docstring
 docstring_file = Path(__file__).parent / "help.md"
