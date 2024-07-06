@@ -92,7 +92,7 @@ class PyAnkiconnect:
         from py_ankiconnect import PyAnkiconnect
         akc = PyAnkiconnect()
         # ^ You can set a different port or host there directly:
-        # akc = PyAnkiconnect(port=your_port)
+        # akc = PyAnkiconnect(default_port=your_port)
 
         # trigger a sync:
         result = akc("sync")

@@ -19,7 +19,7 @@ I made this in about an hour to make it easy to interact with [anki](https://ank
 from py_ankiconnect import PyAnkiconnect
 akc = PyAnkiconnect()
 # ^ You can set a different port or host there directly:
-# akc = PyAnkiconnect(port=your_port)
+# akc = PyAnkiconnect(default_port=your_port)
 
 # trigger a sync:
 result = akc("sync")
