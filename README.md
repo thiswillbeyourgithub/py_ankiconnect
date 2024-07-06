@@ -40,4 +40,11 @@ akc(
         },
 )
 
+# It supposedly even supports async:
+import asyncio
+akc = PyAnkiconnect(async_mode=True)
+async def main():
+    return await akc("getTags")
+asyncio.run(main())
+
 ```
