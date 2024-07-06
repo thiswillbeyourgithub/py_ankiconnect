@@ -55,8 +55,12 @@ class PyAnkiconnect:
             self.__class__.__call__ = self.__class__.__sync_call__
         self.async_mode = async_mode
 
-    def __sync_call__(self, *args, **kwargs) -> Union[List, str]:
-        return asyncio.run(self.__async_call__(*args, **kwargs))
+    def __sync_call__(
+        self,
+        action: str,
+        **params,
+        ) -> Union[List, str]:
+        return asyncio.run(self.__async_call__(action=action, **params))
 
     async def __async_call__(
         self,
