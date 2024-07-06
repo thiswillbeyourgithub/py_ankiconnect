@@ -10,7 +10,7 @@ from .help import docstring
 
 
 class PyAnkiconnect:
-    VERSION: str = "0.2.3"
+    VERSION: str = "0.2.4"
     called_from_cli: bool = False
 
     def __init__(
