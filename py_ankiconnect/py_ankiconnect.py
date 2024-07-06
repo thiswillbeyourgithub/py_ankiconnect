@@ -6,6 +6,8 @@ import asyncio
 import aiohttp
 from functools import wraps
 
+from .help import docstring
+
 
 class PyAnkiconnect:
     VERSION: str = "0.2.2"
@@ -174,6 +176,4 @@ class PyAnkiconnect:
 PyAnkiconnect.__sync_call__ = wraps(PyAnkiconnect.__async_call__)(PyAnkiconnect.__sync_call__)
 
 # set the docstring
-docstring_file = Path(__file__).parent / "help.md"
-docstring = docstring_file.read_text()
 PyAnkiconnect.__doc__ = docstring

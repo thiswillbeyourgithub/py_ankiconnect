@@ -1,3 +1,4 @@
+docstring = """
 # This docstring below is simply the AnkiConnect README.md from jully 2024. It's here for convenience but do checkout [the official AnkiConnect documentation](https://git.foosoft.net/alex/anki-connect).
 
 ## Supported Actions
@@ -4318,3 +4319,4 @@ Search parameters are passed to Anki, check the docs for more information: https
 ---
 
 # This docstring above is simply the AnkiConnect README.md from jully 2024. It's here for convenience but do checkout [the official AnkiConnect documentation](https://git.foosoft.net/alex/anki-connect).
+"""
