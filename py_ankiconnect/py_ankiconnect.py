@@ -39,6 +39,7 @@ class PyAnkiconnect:
             The default port number for AnkiConnect.
         async_mode : bool
             Flag indicating if the instance should operate in asynchronous mode.
+            Note that this was coded quickly and not thoroughly tested.
         called_from_cli : bool
             Flag indicating if the instance is being created from a CLI. Defaults to False.
             You should never have to modify it manually.

@@ -40,7 +40,7 @@ akc(
         },
 )
 
-# It supposedly even supports async:
+# It supposedly even supports async, but this is untested.
 import asyncio
 akc = PyAnkiconnect(async_mode=True)
 async def main():
