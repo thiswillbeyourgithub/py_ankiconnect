@@ -34,7 +34,6 @@ def cli_launcher() -> None:
             fire.Fire(PyAnkiconnect)
     else:
         akc = PyAnkiconnect()
-        akc.called_from_cli = True
         out = akc(*args, **kwargs)
         out = json.dumps(out, ensure_ascii=False)
         return out
