@@ -12,6 +12,13 @@ def cli_launcher() -> None:
     args, kwargs = fire.Fire(
         lambda *args, **kwargs: [args, kwargs]
     )
+
+    # fire replaces notes to "tes" because it removes leading no
+    for keyword in ["notes", "notetypes"]:
+        if keyword[2:] in kwargs:
+            kwargs[keyword] = kwargs[keyword[2:]]
+            del kwargs[keyword[2:]]
+
     if "help" in args or ("help" in kwargs and kwargs["help"]):
         try:
             # if possible use rich because it's in markdown
