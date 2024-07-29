@@ -83,7 +83,7 @@ class PyAnkiconnect:
         * Examples:
             * Get the list of tags: `py_ankiconnect getTags | jq`
             * Get info about [Clozolkor](https://github.com/thiswillbeyourgithub/Clozolkor): `py_ankiconnect findModelsByName --modelNames ["Clozolkor"] | jq`
-            * You can even use pipes: `py_ankiconnect findNotes --query 'body:*test*' | jq -c '.[0:10]' | py_ankiconnect notesInfo --notes -` (you have to use '-', if will be replaced by the content of sys.stdin)
+            * You can even use pipes: `py_ankiconnect findNotes --query '*test*' | jq -c '.[0:10]' | py_ankiconnect notesInfo --notes -` (you have to use '-', if will be replaced by the content of sys.stdin)
 
         ## Using python
         ``` python
