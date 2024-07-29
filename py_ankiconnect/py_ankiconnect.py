@@ -11,7 +11,6 @@ from .help import docstring
 
 class PyAnkiconnect:
     VERSION: str = "0.2.5"
-    called_from_cli: bool = False
 
     def __init__(
         self,
@@ -40,9 +39,6 @@ class PyAnkiconnect:
         async_mode : bool
             Flag indicating if the instance should operate in asynchronous mode.
             Note that this was coded quickly and not thoroughly tested.
-        called_from_cli : bool
-            Flag indicating if the instance is being created from a CLI. Defaults to False.
-            You should never have to modify it manually.
 
         Returns:
         --------
@@ -76,7 +72,7 @@ class PyAnkiconnect:
         -------
         - action: str, for example 'sync'
         - params: dict, any parameters supported by the action.
-            * With addition of "port", "host" and "called_from_cli" which,
+            * With addition of "port" and "host" which,
                 if specified will overide (for this call only) the value
                 given at instanciation time.
 
@@ -165,10 +161,7 @@ class PyAnkiconnect:
         if response['error'] is not None:
             raise Exception(f"Received error: '{response['error']}'")
 
-        if self.called_from_cli:
-            return json.dumps(response['result'])
-        else:
-            return response['result']
+        return response['result']
 
 
     async def _async_request(self, address: str, requestJson: bytes) -> Dict:

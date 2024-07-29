@@ -1,3 +1,4 @@
+import json
 import fire
 
 from .py_ankiconnect import PyAnkiconnect
@@ -28,8 +29,8 @@ def cli_launcher() -> None:
         akc = PyAnkiconnect()
         akc.called_from_cli = True
         out = akc(*args, **kwargs)
-        print(out)
-        return
+        out = json.dumps(out, ensure_ascii=False)
+        return out
 
 if __name__ == "__main__":
     cli_launcher()
