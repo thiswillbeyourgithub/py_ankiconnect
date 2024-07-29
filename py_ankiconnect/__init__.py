@@ -1,5 +1,6 @@
 import json
 import fire
+import sys
 
 from .py_ankiconnect import PyAnkiconnect
 
@@ -18,6 +19,32 @@ def cli_launcher() -> None:
         if keyword[2:] in kwargs:
             kwargs[keyword] = kwargs[keyword[2:]]
             del kwargs[keyword[2:]]
+
+    # if "-" is in sys.argv, parse the last line of stdin as a json output
+    if "-" in sys.argv:
+        target_key = sys.argv[sys.argv.index("-") - 1][2:]
+        import signal
+        signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+        piped_lines = []
+        try:
+            for line in sys.stdin:
+                piped_lines.append(line)
+        except BrokenPipeError:
+            # Handle the error gracefully
+            sys.stderr.close()
+        piped_lines = [p.strip() for p in piped_lines if p.strip()]
+
+        if piped_lines:
+            try:
+                piped_values = json.loads(piped_lines[-1])
+            except Exception:
+                piped_values = piped_lines[-1]
+            # if it's a list and contains only str that looks like int, cast as it (for example --notes)
+            if isinstance(piped_values, list):
+                if all(str(val).isdigit() for val in piped_values):
+                    piped_values = [int(val) for val in piped_values]
+            assert kwargs[target_key] is False
+            kwargs[target_key] = piped_values
 
     if "help" in args or ("help" in kwargs and kwargs["help"]):
         try:
