@@ -35,8 +35,14 @@ def cli_launcher() -> None:
     else:
         akc = PyAnkiconnect()
         out = akc(*args, **kwargs)
-        out = json.dumps(out, ensure_ascii=False)
-        return out
+        try:
+            out = json.dumps(out, ensure_ascii=False, pretty=False)
+        except Exception:
+            pass
+        try:
+            print(out)
+        except Exception:
+            return out
 
 if __name__ == "__main__":
     cli_launcher()
