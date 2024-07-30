@@ -46,11 +46,19 @@ class PyAnkiconnect:
         """
         self.host: str = default_host
         self.port: int = default_port
-        if async_mode:
-            self.__call__ = self.__class__.__async_call__
-        else:
-            self.__call__ = self.__class__.__sync_call__
         self.async_mode = async_mode
+
+    def __call__(
+        self,
+        action: str,
+        **params,
+        ) -> Union[List, str]:
+        if self.async_mode:
+            return self.__async_call__(action, **params)
+        else:
+            return self.__sync_call__(action, **params)
+        self.__class__.__sync_call__.__doc__ = self.__class__.__async_call__.__doc__
+        self.__class__.__call__.__doc__ = self.__class__.__async_call__.__doc__
 
     def __sync_call__(
         self,
@@ -177,9 +185,3 @@ class PyAnkiconnect:
             raise Exception(f"Failed to decode json output of response: '{err}'")
         return data
 
-
-# make sure both calls have the same info
-PyAnkiconnect.__sync_call__ = wraps(PyAnkiconnect.__async_call__)(PyAnkiconnect.__sync_call__)
-
-# set the docstring
-PyAnkiconnect.__doc__ = docstring
