@@ -47,9 +47,9 @@ class PyAnkiconnect:
         self.host: str = default_host
         self.port: int = default_port
         if async_mode:
-            self.__class__.__call__ = self.__class__.__async_call__
+            self.__call__ = self.__class__.__async_call__
         else:
-            self.__class__.__call__ = self.__class__.__sync_call__
+            self.__call__ = self.__class__.__sync_call__
         self.async_mode = async_mode
 
     def __sync_call__(
