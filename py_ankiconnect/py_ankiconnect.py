@@ -65,7 +65,19 @@ class PyAnkiconnect:
         action: str,
         **params,
         ) -> Union[List, str]:
-        return asyncio.run(self.__async_call__(action=action, **params))
+        if not asyncio.iscoroutinefunction(asyncio.current_task):
+            try:
+                loop = asyncio.get_running_loop()
+            except RuntimeError:
+                return asyncio.run(self.__async_call__(action=action, **params))
+            future = asyncio.run_coroutine_threadsafe(
+                    self.__async_call__(action=action, **params),
+                    loop,
+                )
+            result = future.result()
+            return result
+        else:
+            return self.__async_call__(action=action, **params)
 
     async def __async_call__(
         self,
@@ -75,6 +87,7 @@ class PyAnkiconnect:
         """
         Ask something from a running anki instance.
         **To see all the supported actions, see this class's docstring instead.**
+        Note that if you are in an async environment, PyAnkiconnect will try to use the async code itself.
 
         Params:
         -------
