@@ -76,7 +76,12 @@ class PyAnkiconnect:
                     return asyncio.run(self.__async_call__(action=action, **params))
                 except RuntimeError:
                     pass
-            if loop:
+            try:
+                return self.__async_call__(action=action, **params)
+            except Exception:
+                pass
+
+            if loop is not None:
                 future = asyncio.run_coroutine_threadsafe(
                         self.__async_call__(action=action, **params),
                         loop,
@@ -85,8 +90,9 @@ class PyAnkiconnect:
                     result = future.result(timeout=self.timeout)
                     return result
                 except TimeoutError:
-                    pass
-        return self.__async_call__(action=action, **params)
+                    raise Exception("Failed all ways to call sync or async_")
+        else:
+            return self.__async_call__(action=action, **params)
 
     async def __async_call__(
         self,
