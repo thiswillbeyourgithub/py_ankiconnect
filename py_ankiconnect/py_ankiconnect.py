@@ -17,6 +17,7 @@ class PyAnkiconnect:
         default_host: str = "http://127.0.0.1",
         default_port: int = 8765,
         async_mode: bool = False,
+        timeout: int = 10,
         ) -> None:
         """
         Initialize a PyAnkiconnect instance.
@@ -30,6 +31,7 @@ class PyAnkiconnect:
         async_mode : bool, optional
             Flag to enable asynchronous mode. Defaults to False.
 
+
         Attributes:
         -----------
         host : str
@@ -39,6 +41,9 @@ class PyAnkiconnect:
         async_mode : bool
             Flag indicating if the instance should operate in asynchronous mode.
             Note that this was coded quickly and not thoroughly tested.
+        timeout : int
+            Nb of second to wait for the result when __sync_call__ decides to call
+            async on its own (because it detects we are called in an async environment)
 
         Returns:
         --------
@@ -47,6 +52,7 @@ class PyAnkiconnect:
         self.host: str = default_host
         self.port: int = default_port
         self.async_mode = async_mode
+        self.timeout = timeout
 
     def __call__(
         self,
@@ -74,7 +80,7 @@ class PyAnkiconnect:
                     self.__async_call__(action=action, **params),
                     loop,
                 )
-            result = future.result()
+            result = future.result(timeout=self.timeout)
             return result
         else:
             return self.__async_call__(action=action, **params)
