@@ -16,7 +16,7 @@ class PyAnkiconnect:
         self,
         default_host: str = "http://127.0.0.1",
         default_port: int = 8765,
-        async_mode: bool = False,
+        force_async_mode: bool = False,
         timeout: int = 10,
         ) -> None:
         """
@@ -28,22 +28,20 @@ class PyAnkiconnect:
             The host address for AnkiConnect. Defaults to "http://127.0.0.1".
         default_port : int, optional
             The port number for AnkiConnect. Defaults to 8765.
-        async_mode : bool, optional
-            Flag to enable asynchronous mode. Defaults to False.
+        force_async_mode : bool, optional
+            Flag to always use asynchronous mode. Defaults to False, meaning
+            that we use sync or async depending on the caller.
+        timeout : int
+            Nb of second to wait for the result when __sync_call__ decides to call
+            async on its own (because it detects we are called in an async environment)
 
 
         Attributes:
         -----------
         host : str
-            The default host address for AnkiConnect.
         port : int
-            The default port number for AnkiConnect.
-        async_mode : bool
-            Flag indicating if the instance should operate in asynchronous mode.
-            Note that this was coded quickly and not thoroughly tested.
+        force_async_mode : bool
         timeout : int
-            Nb of second to wait for the result when __sync_call__ decides to call
-            async on its own (because it detects we are called in an async environment)
 
         Returns:
         --------
@@ -51,7 +49,7 @@ class PyAnkiconnect:
         """
         self.host: str = default_host
         self.port: int = default_port
-        self.async_mode = async_mode
+        self.force_async_mode = force_async_mode
         self.timeout = timeout
 
     def __call__(
@@ -59,7 +57,7 @@ class PyAnkiconnect:
         action: str,
         **params,
         ) -> Union[List, str]:
-        if self.async_mode:
+        if self.force_async_mode:
             return self.__async_call__(action, **params)
         else:
             return self.__sync_call__(action, **params)
@@ -70,18 +68,25 @@ class PyAnkiconnect:
         **params,
         ) -> Union[List, str]:
         if not asyncio.iscoroutinefunction(asyncio.current_task):
+            loop = None
             try:
                 loop = asyncio.get_running_loop()
             except RuntimeError:
-                return asyncio.run(self.__async_call__(action=action, **params))
-            future = asyncio.run_coroutine_threadsafe(
-                    self.__async_call__(action=action, **params),
-                    loop,
-                )
-            result = future.result(timeout=self.timeout)
-            return result
-        else:
-            return self.__async_call__(action=action, **params)
+                try:
+                    return asyncio.run(self.__async_call__(action=action, **params))
+                except RuntimeError:
+                    pass
+            if loop:
+                future = asyncio.run_coroutine_threadsafe(
+                        self.__async_call__(action=action, **params),
+                        loop,
+                    )
+                try:
+                    result = future.result(timeout=self.timeout)
+                    return result
+                except TimeoutError:
+                    pass
+        return self.__async_call__(action=action, **params)
 
     async def __async_call__(
         self,

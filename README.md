@@ -41,9 +41,9 @@ akc(
         },
 )
 
-# It supposedly even supports async, but this is untested.
+# It supports async mode. By default it will try async or sync depending on who calls it, but you can set force_async_mode to always use async.
 import asyncio
-akc = PyAnkiconnect(async_mode=True)
+akc = PyAnkiconnect(force_async_mode=True)
 async def main():
     return await akc("getTags")
 asyncio.run(main())
