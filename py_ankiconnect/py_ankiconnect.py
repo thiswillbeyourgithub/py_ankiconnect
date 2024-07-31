@@ -63,8 +63,6 @@ class PyAnkiconnect:
             return self.__async_call__(action, **params)
         else:
             return self.__sync_call__(action, **params)
-        self.__class__.__sync_call__.__doc__ = self.__class__.__async_call__.__doc__
-        self.__class__.__call__.__doc__ = self.__class__.__async_call__.__doc__
 
     def __sync_call__(
         self,
@@ -204,3 +202,6 @@ class PyAnkiconnect:
             raise Exception(f"Failed to decode json output of response: '{err}'")
         return data
 
+# update the docstrings
+PyAnkiconnect.__sync_call__.__doc__ = PyAnkiconnect.__async_call__.__doc__
+PyAnkiconnect.__call__.__doc__ = PyAnkiconnect.__async_call__.__doc__
