@@ -166,16 +166,17 @@ class PyAnkiconnect:
                 "async_mode can only be used when instantiating the class, "
                 "not when calling with it."
             )
-        if "notes" in params and isinstance(params["notes"], str):
-            try:
-                params["notes"] = [int(n) for n in json.loads(params["notes"])]
-            except Exception:
-                pass
-        if "cards" in params and isinstance(params["cards"], str):
-            try:
-                params["cards"] = [int(n) for n in json.loads(params["cards"])]
-            except Exception:
-                pass
+        # if "notes" in params and isinstance(params["notes"], str):
+        #     try:
+        #         params["notes"] = [int(n) for n in json.loads(params["notes"])]
+        #         assert isinstance(params["notes"], list), params["notes"]
+        #     except Exception:
+        #         pass
+        # if "cards" in params and isinstance(params["cards"], str):
+        #     try:
+        #         params["cards"] = [int(n) for n in json.loads(params["cards"])]
+        #     except Exception:
+        #         pass
         address: str = f"{host}:{port}"
 
         requestJson: bytes = json.dumps(
