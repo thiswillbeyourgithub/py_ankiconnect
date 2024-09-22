@@ -18,6 +18,7 @@ class PyAnkiconnect:
         default_port: int = 8765,
         force_async_mode: bool = False,
         timeout: int = 10,
+        concurrency_limit: int = 50,
         ) -> None:
         """
         Initialize a PyAnkiconnect instance.
@@ -34,7 +35,8 @@ class PyAnkiconnect:
         timeout : int, default 10
             Nb of second to wait for the result when __sync_call__ decides to call
             async on its own (because it detects we are called in an async environment)
-
+        concurrency_limit: int, default 50
+            Limit the number of concurrent thread using asyncio.semaphore
 
         Attributes:
         -----------
@@ -42,6 +44,8 @@ class PyAnkiconnect:
         port : int
         force_async_mode : bool
         timeout : int
+        concurrency_limit: int
+        semaphore: asyncio.Semaphore
 
         Returns:
         --------
@@ -51,6 +55,8 @@ class PyAnkiconnect:
         self.port: int = default_port
         self.force_async_mode = force_async_mode
         self.timeout = timeout
+        self.concurrency_limit = concurrency_limit
+        self.semaphore = asyncio.Semaphore(self.concurrency_limit)
 
     def __call__(
         self,
@@ -217,7 +223,8 @@ class PyAnkiconnect:
             async with session.post(address, data=requestJson) as response:
                 assert response.ok, f"Status of response is not True but {response.ok}"
                 assert response.status == 200, f"Status code of response is not 200 but {response.ok}"
-                text = await response.text()
+                async with self.semaphore:
+                    text = await response.text()
         try:
             data = json.loads(text)
         except Exception as err:
