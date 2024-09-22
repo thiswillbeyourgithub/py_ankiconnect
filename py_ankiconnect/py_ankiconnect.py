@@ -31,7 +31,7 @@ class PyAnkiconnect:
         force_async_mode : bool, optional
             Flag to always use asynchronous mode. Defaults to False, meaning
             that we use sync or async depending on the caller.
-        timeout : int
+        timeout : int, default 10
             Nb of second to wait for the result when __sync_call__ decides to call
             async on its own (because it detects we are called in an async environment)
 
