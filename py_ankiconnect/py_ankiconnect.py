@@ -6,7 +6,7 @@ import aiohttp
 from functools import wraps
 try:
     from beartype.typing import Union, List, Dict
-except
+except Exception:
     from typing import Union, List, Dict
 
 from .help import docstring
