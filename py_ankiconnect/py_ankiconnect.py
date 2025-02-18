@@ -1,10 +1,13 @@
 from pathlib import Path
-from typing import Union, List, Dict
 import json
 from urllib.error import URLError
 import asyncio
 import aiohttp
 from functools import wraps
+try:
+    from beartype.typing import Union, List, Dict
+except
+    from typing import Union, List, Dict
 
 from .help import docstring
 
