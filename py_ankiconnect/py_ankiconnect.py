@@ -13,7 +13,7 @@ from .help import docstring
 
 
 class PyAnkiconnect:
-    VERSION: str = "1.1.2"
+    VERSION: str = "1.1.3"
 
     def __init__(
         self,
