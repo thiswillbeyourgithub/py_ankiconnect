@@ -31,6 +31,7 @@ setup(
 
     install_requires=[
         "fire >= 0.6.0",
+        "aiohttp",
     ],
 
     extras_require={
